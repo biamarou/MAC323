@@ -63,7 +63,14 @@ import edu.princeton.cs.algs4.StdOut;
  */
 
 public class Tail {
-    // atributos de estado 
+    // atributos de estado
+    private class Node {
+	String line;
+	Node next;
+    }
+
+    Node head = new Node();
+    Node tail = new Node();
     
     /** Construtores.
      * 
@@ -73,6 +80,29 @@ public class Tail {
     // do arquivo fileName. O valor 10 é o default.
     public Tail(String fileName) {
         // escreva seu método a seguir
+	In file = new In (fileName);
+
+	head.next = new Node();
+	head.next.line = file.readLine();
+	tail.next = head.next;
+
+	for (int i = 0; i < 9; i++) {
+	    
+	    tail.next.next = new Node();
+	    tail.next.next.line = file.readLine();
+	    tail.next = tail.next.next;
+	    
+	}
+	
+	
+        
+	while (file.hasNextLine()) {
+     
+	    head.next = head.next.next;
+	    tail.next.next = new Node();
+	    tail.next.next.line = file.readLine();
+	    tail.next = tail.next.next;
+	}
     }   
 
     // Construtor que prepara para que o método lines()
@@ -80,14 +110,29 @@ public class Tail {
     // do arquivo fileName.
     public Tail(String fileName, int k) {
         // escreva seu método a seguir
-    }   
+	In file = new In (fileName);
+	Node latest = head.next;
+    
+	for (int i = 0; i < k; i++) {
+	    latest = new Node();
+	    latest = latest.next;
+	}
+    }
+
+    public void Print () {
+	Node printing;
+	for (printing = head.next; printing != null; printing = printing.next)
+	    StdOut.println(printing.line);
+	
+	
+    }
 
     /** Returns an iterable object containing the last k lines. 
      *  The value of k depends on the constructor.
      */
-    public Iterable<String> lines() {
+    // public Iterable<String> lines() {
         // escreva seu método a seguir
-    }
+    //}
 
    /***************************************************************************
     *  métodos privados
@@ -104,34 +149,10 @@ public class Tail {
     
    /** Unit test
     */
-    public static void main(String[] args) {
-        if (args.length == 0) {
-            use();
-            return;
-        }
+   public static void main(String[] args) {
+       Tail lista = new Tail(args[0]);
+       lista.Print();
+   }
         
-        if (args[0].equals("-n")) {
-            int k = Integer.parseInt(args[1]);
-            for (int i = 2;  i < args.length; i++) {
-                StdOut.println("==> " + args[i] + "<==");
-                Tail tail = new Tail(args[i], k);
-                for (String line: tail.lines()) {
-                    StdOut.println(line);
-                }
-                StdOut.println();
-            }
-            
-        }
-        else {
-            for (int i = 0;  i < args.length; i++) {
-                StdOut.println("==> " + args[i] + "<==");
-                Tail tail = new Tail(args[i]);
-                for (String line: tail.lines()) {
-                    StdOut.println(line);
-                }
-                StdOut.println();
-            }
-        }
-    }
 }
 
