@@ -47,8 +47,8 @@ import edu.princeton.cs.algs4.In;
 // This class provides methods for printing strings and numbers to standard output.
 // https://www.ime.usp.br/~pf/sedgewick-wayne/stdlib/documentation/index.html
 // http://algs4.cs.princeton.edu/code/javadoc/edu/princeton/cs/algs4/StdOut.html
-import edu.princeton.cs.algs4.StdOut; 
-
+import edu.princeton.cs.algs4.StdOut;
+import java.util.LinkedList;
 
 /** Está é classe é inspirada no Tarefa 04 do Paulo Felofiloff para 
  * a edição de 2014 de MAC0323: 
@@ -64,13 +64,7 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class Tail {
     // atributos de estado
-    private class Node {
-	String line;
-	Node next;
-    }
-
-    Node head = new Node();
-    Node tail = new Node();
+    LinkedList<String> list = new LinkedList<String>();
     
     /** Construtores.
      * 
@@ -82,27 +76,14 @@ public class Tail {
         // escreva seu método a seguir
 	In file = new In (fileName);
 
-	head.next = new Node();
-	head.next.line = file.readLine();
-	tail.next = head.next;
-
-	for (int i = 0; i < 9; i++) {
-	    
-	    tail.next.next = new Node();
-	    tail.next.next.line = file.readLine();
-	    tail.next = tail.next.next;
-	    
-	}
-	
-	
-        
-	while (file.hasNextLine()) {
+	for (int i = 0; i < 10 && file.hasNextLine(); i++)
+	    list.addLast(file.readLine()); 
      
-	    head.next = head.next.next;
-	    tail.next.next = new Node();
-	    tail.next.next.line = file.readLine();
-	    tail.next = tail.next.next;
+	while (file.hasNextLine()) {
+	    list.remove();
+	    list.addLast(file.readLine()); 
 	}
+ 
     }   
 
     // Construtor que prepara para que o método lines()
@@ -111,28 +92,25 @@ public class Tail {
     public Tail(String fileName, int k) {
         // escreva seu método a seguir
 	In file = new In (fileName);
-	Node latest = head.next;
-    
-	for (int i = 0; i < k; i++) {
-	    latest = new Node();
-	    latest = latest.next;
+
+	for (int i = 0; i < k && file.hasNextLine(); i++)
+	    list.addLast(file.readLine()); 
+     
+	while (file.hasNextLine()) {
+	    list.remove();
+	    list.addLast(file.readLine()); 
 	}
+
     }
 
-    public void Print () {
-	Node printing;
-	for (printing = head.next; printing != null; printing = printing.next)
-	    StdOut.println(printing.line);
-	
-	
-    }
 
     /** Returns an iterable object containing the last k lines. 
      *  The value of k depends on the constructor.
      */
-    // public Iterable<String> lines() {
-        // escreva seu método a seguir
-    //}
+     public Iterable<String> lines() {
+	 //escreva seu método a seguir
+	 return list;
+    }
 
    /***************************************************************************
     *  métodos privados
@@ -150,9 +128,33 @@ public class Tail {
    /** Unit test
     */
    public static void main(String[] args) {
-       Tail lista = new Tail(args[0]);
-       lista.Print();
-   }
+       if (args.length == 0) {
+            use();
+            return;
+        }
         
+        if (args[0].equals("-n")) {
+            int k = Integer.parseInt(args[1]);
+            for (int i = 2;  i < args.length; i++) {
+                StdOut.println("==> " + args[i] + "<==");
+                Tail tail = new Tail(args[i], k);
+                for (String line: tail.lines()) {
+                    StdOut.println(line);
+                }
+                StdOut.println();
+            }
+            
+        }
+        else {
+            for (int i = 0;  i < args.length; i++) {
+                StdOut.println("==> " + args[i] + "<==");
+                Tail tail = new Tail(args[i]);
+                for (String line: tail.lines()) {
+                    StdOut.println(line);
+                }
+                StdOut.println();
+            }
+        }
+   }
 }
 
