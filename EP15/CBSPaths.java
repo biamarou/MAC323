@@ -1,6 +1,7 @@
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.SeparateChainingHashST;
+import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.MinPQ;
 import java.lang.Iterable;
 import java.util.Comparator;
@@ -67,6 +68,14 @@ public class CBSPaths {
 		}
 
 		ministry = airports.get(StdIn.readString()).intValue();
+
+		Iterable<Integer> testing = dijkstra(graph[executives[0]]);
+		StdOut.println(index[executives[0]]);
+		for (Integer i : testing) {
+			StdOut.println(index[i.intValue()]);
+		}
+		StdOut.println();
+
 	}
 
 	private void graph (int from, int to, double weight) {
@@ -104,10 +113,49 @@ public class CBSPaths {
 		}
 	}
 
-	private Iterable dijkstra (Edge search) {
+	private Iterable<Integer> dijkstra (Edge search) {
 		MinPQ<Edge> onGoing = new MinPQ<>(new CompareEdge());
-		int[] distTo = new int[N];
+		Stack<Integer> path = new Stack<>();
+		double[] distTo = new double[N];
 		int[] father = new int[N];
+		boolean[] marked = new boolean[N];
+		int last = -1;
+
+		for (int i = 0; i < N; i++) {
+			distTo[i] = Double.POSITIVE_INFINITY;
+			marked[i] = false;
+		}
+		
+		onGoing.insert(search);
+		father[search.to] = search.to;
+		distTo[search.to] = 0;
+
+		while(!onGoing.isEmpty()) {
+			Edge e = graph[onGoing.min().to];
+			Edge son = e.next;
+			
+			while (son != null) {
+				
+				if (!marked[son.to] && son.weight + distTo[e.to] < distTo[son.to]) {
+					
+					distTo[son.to] = son.weight + distTo[e.to];
+					father[son.to] = e.to;
+				}
+				
+				onGoing.insert(son);
+				son = son.next;
+			}
+
+			last = onGoing.delMin().to;
+			marked[last] = true;
+		}
+
+		while (last != -1 && father[last] != last) {
+			path.push((Integer)last);
+			last = father[last];
+		}
+
+		return path;		
 	}
 
 	public static void main (String[] args) {
